@@ -10,13 +10,21 @@ import * as Contracts from "./index.js";
 
 declare module "@nomicfoundation/hardhat-ethers/types" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
-  getContractFactory(name: 'RobotCredits', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.RobotCredits__factory>
+  getContractFactory(name: 'IERC20Mintable', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.IERC20Mintable__factory>
+getContractFactory(name: 'RobotCredits', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.RobotCredits__factory>
+getContractFactory(name: 'TokenSale', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.TokenSale__factory>
 
-  getContractAt(name: 'RobotCredits', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.RobotCredits>
+  getContractAt(name: 'IERC20Mintable', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.IERC20Mintable>
+getContractAt(name: 'RobotCredits', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.RobotCredits>
+getContractAt(name: 'TokenSale', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.TokenSale>
 
-  deployContract(name: 'RobotCredits', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.RobotCredits>
+  deployContract(name: 'IERC20Mintable', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IERC20Mintable>
+deployContract(name: 'RobotCredits', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.RobotCredits>
+deployContract(name: 'TokenSale', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TokenSale>
 
-  deployContract(name: 'RobotCredits', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.RobotCredits>
+  deployContract(name: 'IERC20Mintable', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IERC20Mintable>
+deployContract(name: 'RobotCredits', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.RobotCredits>
+deployContract(name: 'TokenSale', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TokenSale>
 
     // default types
     getContractFactory(
