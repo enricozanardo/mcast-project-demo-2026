@@ -17,6 +17,30 @@ async function main() {
  await token.waitForDeployment();
  const tokenAddress = await token.getAddress();
  console.log("RobotCredits deployed at: ", tokenAddress);
+
+
+ // TokenSale
+ const Sale = await ethers.getContractFactory("TokenSale");
+ const sale = await Sale.deploy(tokenAddress, TOKENS_PER_ETH, deployer.address);
+ await sale.waitForDeployment();
+ const saleAddress = await sale.getAddress();
+ console.log("Token sale deployed at:", saleAddress);
+
+ // Authority
+ const tx = await token.transferOwnership(saleAddress);
+ await tx.wait()
+ console.log("RobotCredits ownership tranferred to TokenSale");
+
+ console.log("\n--- Summary -----------------------------------");
+ console.log(`RCRED : ${tokenAddress}`);
+ console.log(`Sale  : ${saleAddress}`);
+ console.log(`Rate  : 1 ETH = ${TOKENS_PER_ETH} RCRED`);
+ console.log(" ------------------------------------------------");
+
+
+
+
+
 }
 
 
