@@ -12,6 +12,9 @@ contract TokenSale is Ownable, ReentrancyGuard {
 
 	uint256 public tokensPerEth;
 
+	event TokensPurchased(address indexed buyer ,uint256 ethPaid, uint256 tokenMinted);
+	event RateUpdagted(uint256 oldRate, uint256 newRate);
+	event ETHWithdraw(address indexed to, uint256 amount);
 
 	error ZeroPayment();
 	error ZeroRate();
@@ -39,20 +42,20 @@ contract TokenSale is Ownable, ReentrancyGuard {
 	  uint256 amount = msg.value * tokensPerEth;
 	  token.mint(msg.sender, amount);
 
-	  // emit ...
+	  emit TokensPurchased(msg.sender, msg.value, amount);
 	}
 
 
 	function setRate(uint256 newRate) external onlyOwner {
 		if(newRate == 0) revert ZeroRate();
-                // emit ...
-
+        emit RateUpdagted(tokensPerEth, newRate);
 		tokensPerEth = newRate;
 	}
 
 	function withdrawETH(address to, uint256 amount) external onlyOwner {
 	  (bool ok,) = payable(to).call{value: amount}("");
           if (!ok) revert WithdrawFailed();
+		  emit ETHWithdraw(to, amount);
 	}
 
 }

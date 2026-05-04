@@ -13,7 +13,7 @@ contract RobotCredits is ERC20, Ownable {
   Ownable(initialOwner) {}
 
 
- function min(address to, uint256 amount) external onlyOwner {
+ function mint(address to, uint256 amount) external onlyOwner {
   _mint(to, amount);
  }
 

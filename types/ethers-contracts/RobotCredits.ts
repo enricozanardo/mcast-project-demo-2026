@@ -6,7 +6,7 @@ import type { TypedContractEvent, TypedDeferredTopicFilter, TypedEventLog, Typed
   
 
   export interface RobotCreditsInterface extends Interface {
-    getFunction(nameOrSignature: "allowance" | "approve" | "balanceOf" | "decimals" | "min" | "name" | "owner" | "renounceOwnership" | "symbol" | "totalSupply" | "transfer" | "transferFrom" | "transferOwnership"): FunctionFragment;
+    getFunction(nameOrSignature: "allowance" | "approve" | "balanceOf" | "decimals" | "mint" | "name" | "owner" | "renounceOwnership" | "symbol" | "totalSupply" | "transfer" | "transferFrom" | "transferOwnership"): FunctionFragment;
 
     getEvent(nameOrSignatureOrTopic: "Approval" | "OwnershipTransferred" | "Transfer"): EventFragment;
 
@@ -14,7 +14,7 @@ import type { TypedContractEvent, TypedDeferredTopicFilter, TypedEventLog, Typed
 encodeFunctionData(functionFragment: 'approve', values: [AddressLike, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'balanceOf', values: [AddressLike]): string;
 encodeFunctionData(functionFragment: 'decimals', values?: undefined): string;
-encodeFunctionData(functionFragment: 'min', values: [AddressLike, BigNumberish]): string;
+encodeFunctionData(functionFragment: 'mint', values: [AddressLike, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'name', values?: undefined): string;
 encodeFunctionData(functionFragment: 'owner', values?: undefined): string;
 encodeFunctionData(functionFragment: 'renounceOwnership', values?: undefined): string;
@@ -28,7 +28,7 @@ encodeFunctionData(functionFragment: 'transferOwnership', values: [AddressLike])
 decodeFunctionResult(functionFragment: 'approve', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'balanceOf', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'decimals', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'min', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'mint', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'name', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'owner', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'renounceOwnership', data: BytesLike): Result;
@@ -142,7 +142,7 @@ decodeFunctionResult(functionFragment: 'transferOwnership', data: BytesLike): Re
     
 
     
-    min: TypedContractMethod<
+    mint: TypedContractMethod<
       [to: AddressLike, amount: BigNumberish, ],
       [void],
       'nonpayable'
@@ -236,7 +236,7 @@ getFunction(nameOrSignature: 'decimals'): TypedContractMethod<
       [bigint],
       'view'
     >;
-getFunction(nameOrSignature: 'min'): TypedContractMethod<
+getFunction(nameOrSignature: 'mint'): TypedContractMethod<
       [to: AddressLike, amount: BigNumberish, ],
       [void],
       'nonpayable'
