@@ -3,8 +3,10 @@
 /* eslint-disable */
 export type { IERC20Mintable } from './IERC20Mintable.js';
 export type { RobotCredits } from './RobotCredits.js';
+export type { RobotMarketplace } from './RobotMarketplace.js';
 export type { TokenSale } from './TokenSale.js';
 export * as factories from './factories/index.js';
 export { IERC20Mintable__factory } from './factories/IERC20Mintable__factory.js';
 export { RobotCredits__factory } from './factories/RobotCredits__factory.js';
+export { RobotMarketplace__factory } from './factories/RobotMarketplace__factory.js';
 export { TokenSale__factory } from './factories/TokenSale__factory.js';

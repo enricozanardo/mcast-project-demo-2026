@@ -3,4 +3,5 @@
 /* eslint-disable */
 export { IERC20Mintable__factory } from './IERC20Mintable__factory.js';
 export { RobotCredits__factory } from './RobotCredits__factory.js';
+export { RobotMarketplace__factory } from './RobotMarketplace__factory.js';
 export { TokenSale__factory } from './TokenSale__factory.js';

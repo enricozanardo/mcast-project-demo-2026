@@ -12,18 +12,22 @@ declare module "@nomicfoundation/hardhat-ethers/types" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
   getContractFactory(name: 'IERC20Mintable', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.IERC20Mintable__factory>
 getContractFactory(name: 'RobotCredits', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.RobotCredits__factory>
+getContractFactory(name: 'RobotMarketplace', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.RobotMarketplace__factory>
 getContractFactory(name: 'TokenSale', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.TokenSale__factory>
 
   getContractAt(name: 'IERC20Mintable', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.IERC20Mintable>
 getContractAt(name: 'RobotCredits', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.RobotCredits>
+getContractAt(name: 'RobotMarketplace', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.RobotMarketplace>
 getContractAt(name: 'TokenSale', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.TokenSale>
 
   deployContract(name: 'IERC20Mintable', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IERC20Mintable>
 deployContract(name: 'RobotCredits', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.RobotCredits>
+deployContract(name: 'RobotMarketplace', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.RobotMarketplace>
 deployContract(name: 'TokenSale', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TokenSale>
 
   deployContract(name: 'IERC20Mintable', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IERC20Mintable>
 deployContract(name: 'RobotCredits', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.RobotCredits>
+deployContract(name: 'RobotMarketplace', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.RobotMarketplace>
 deployContract(name: 'TokenSale', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TokenSale>
 
     // default types

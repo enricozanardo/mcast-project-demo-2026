@@ -8,7 +8,7 @@ import type { TypedContractEvent, TypedDeferredTopicFilter, TypedEventLog, Typed
   export interface TokenSaleInterface extends Interface {
     getFunction(nameOrSignature: "buyTokens" | "owner" | "renounceOwnership" | "setRate" | "token" | "tokensPerEth" | "transferOwnership" | "withdrawETH"): FunctionFragment;
 
-    getEvent(nameOrSignatureOrTopic: "OwnershipTransferred" | "TokensPurchased"): EventFragment;
+    getEvent(nameOrSignatureOrTopic: "ETHWithdraw" | "OwnershipTransferred" | "RateUpdagted" | "TokensPurchased"): EventFragment;
 
     encodeFunctionData(functionFragment: 'buyTokens', values?: undefined): string;
 encodeFunctionData(functionFragment: 'owner', values?: undefined): string;
@@ -30,10 +30,34 @@ decodeFunctionResult(functionFragment: 'withdrawETH', data: BytesLike): Result;
   }
 
   
+    export namespace ETHWithdrawEvent {
+      export type InputTuple = [to: AddressLike, amount: BigNumberish];
+      export type OutputTuple = [to: string, amount: bigint];
+      export interface OutputObject {to: string, amount: bigint };
+      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
+      export type Filter = TypedDeferredTopicFilter<Event>
+      export type Log = TypedEventLog<Event>
+      export type LogDescription = TypedLogDescription<Event>
+    }
+
+  
+
     export namespace OwnershipTransferredEvent {
       export type InputTuple = [previousOwner: AddressLike, newOwner: AddressLike];
       export type OutputTuple = [previousOwner: string, newOwner: string];
       export interface OutputObject {previousOwner: string, newOwner: string };
+      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
+      export type Filter = TypedDeferredTopicFilter<Event>
+      export type Log = TypedEventLog<Event>
+      export type LogDescription = TypedLogDescription<Event>
+    }
+
+  
+
+    export namespace RateUpdagtedEvent {
+      export type InputTuple = [oldRate: BigNumberish, newRate: BigNumberish];
+      export type OutputTuple = [oldRate: bigint, newRate: bigint];
+      export interface OutputObject {oldRate: bigint, newRate: bigint };
       export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
       export type Filter = TypedDeferredTopicFilter<Event>
       export type Log = TypedEventLog<Event>
@@ -195,13 +219,23 @@ getFunction(nameOrSignature: 'withdrawETH'): TypedContractMethod<
       'nonpayable'
     >;
 
-    getEvent(key: 'OwnershipTransferred'): TypedContractEvent<OwnershipTransferredEvent.InputTuple, OwnershipTransferredEvent.OutputTuple, OwnershipTransferredEvent.OutputObject>;
+    getEvent(key: 'ETHWithdraw'): TypedContractEvent<ETHWithdrawEvent.InputTuple, ETHWithdrawEvent.OutputTuple, ETHWithdrawEvent.OutputObject>;
+getEvent(key: 'OwnershipTransferred'): TypedContractEvent<OwnershipTransferredEvent.InputTuple, OwnershipTransferredEvent.OutputTuple, OwnershipTransferredEvent.OutputObject>;
+getEvent(key: 'RateUpdagted'): TypedContractEvent<RateUpdagtedEvent.InputTuple, RateUpdagtedEvent.OutputTuple, RateUpdagtedEvent.OutputObject>;
 getEvent(key: 'TokensPurchased'): TypedContractEvent<TokensPurchasedEvent.InputTuple, TokensPurchasedEvent.OutputTuple, TokensPurchasedEvent.OutputObject>;
 
     filters: {
       
+      'ETHWithdraw(address,uint256)': TypedContractEvent<ETHWithdrawEvent.InputTuple, ETHWithdrawEvent.OutputTuple, ETHWithdrawEvent.OutputObject>;
+      ETHWithdraw: TypedContractEvent<ETHWithdrawEvent.InputTuple, ETHWithdrawEvent.OutputTuple, ETHWithdrawEvent.OutputObject>;
+    
+
       'OwnershipTransferred(address,address)': TypedContractEvent<OwnershipTransferredEvent.InputTuple, OwnershipTransferredEvent.OutputTuple, OwnershipTransferredEvent.OutputObject>;
       OwnershipTransferred: TypedContractEvent<OwnershipTransferredEvent.InputTuple, OwnershipTransferredEvent.OutputTuple, OwnershipTransferredEvent.OutputObject>;
+    
+
+      'RateUpdagted(uint256,uint256)': TypedContractEvent<RateUpdagtedEvent.InputTuple, RateUpdagtedEvent.OutputTuple, RateUpdagtedEvent.OutputObject>;
+      RateUpdagted: TypedContractEvent<RateUpdagtedEvent.InputTuple, RateUpdagtedEvent.OutputTuple, RateUpdagtedEvent.OutputObject>;
     
 
       'TokensPurchased(address,uint256,uint256)': TypedContractEvent<TokensPurchasedEvent.InputTuple, TokensPurchasedEvent.OutputTuple, TokensPurchasedEvent.OutputObject>;
