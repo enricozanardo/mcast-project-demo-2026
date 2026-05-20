@@ -9,6 +9,7 @@ import {
 } from "ethers";
 import { networkFor } from "./networks";
 
+
 export interface TxLikeError {
   code?: number | string;
   reason?: string;
@@ -17,11 +18,13 @@ export interface TxLikeError {
   info?: { error?: { message?: string } };
 }
 
+
 export function mapTxError(e: unknown): string {
   if (e == null) return "Transaction failed.";
   if (typeof e === "string") return e;
   if (typeof e !== "object") return String(e);
   const err = e as TxLikeError;
+
 
   if (err.code === 4001 || err.code === "ACTION_REJECTED") {
     return "You rejected the transaction in MetaMask.";
@@ -29,14 +32,15 @@ export function mapTxError(e: unknown): string {
   if (err.code === -32002) {
     return "MetaMask is already showing a request. Open it and finish that one first.";
   }
-
+  // ethers v6 wraps revert reasons in `shortMessage` / `reason`.
   if (err.shortMessage) return err.shortMessage;
   if (err.reason) return err.reason;
-
+  // Hardhat node sometimes nests revert info here:
   const inner = err.info?.error?.message;
   if (inner) return inner;
   return err.message ?? "Transaction failed.";
 }
+
 
 export function explorerTx(chainId: number | null, txHash: string | null): string | null {
   if (!chainId || !txHash) return null;
@@ -45,16 +49,21 @@ export function explorerTx(chainId: number | null, txHash: string | null): strin
   return `${cfg.blockExplorer}/tx/${txHash}`;
 }
 
+
 export type TxStatus = "idle" | "sending" | "mining" | "success" | "error";
 
+
 export function toHexQuantity(v: bigint): string {
+  // EIP-1474 quantity encoding: "0x0" for zero, no leading zeros otherwise.
   if (v === 0n) return "0x0";
   if (v < 0n) throw new Error("negative quantity");
   return "0x" + v.toString(16);
 }
 
 export interface SendTxOptions {
+  /** ETH (in wei) to attach to the transaction. */
   value?: bigint;
+  /** Override gas limit (else we estimate via ethers and pad 20%). */
   gasLimit?: bigint;
 }
 
@@ -86,6 +95,7 @@ export async function sendTx(
     gasLimit = (estimate * 12n) / 10n;
   }
 
+
   const params: Record<string, string> = {
     from,
     to,
@@ -103,6 +113,7 @@ export async function sendTx(
 
   return hash;
 }
+
 
 export async function waitReceipt(
   provider: { waitForTransaction(h: string): Promise<TransactionReceipt | null> },

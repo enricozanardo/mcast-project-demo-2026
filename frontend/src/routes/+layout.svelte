@@ -16,7 +16,8 @@
     </a>
     <nav class="flex items-center gap-4 text-sm">
       <a href="/" class="text-mcast-blue hover:underline">Marketplace</a>
-      <!-- TODO: add /profile and ConnectButton  -->
+      <a href="/mint" class="text-mcast-blue hover:underline">Mint</a>
+      <a href="/profile" class="text-mcast-blue hover:underline">Profile</a>
       <ConnectButton />
     </nav>
   </div>

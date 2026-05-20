@@ -2,8 +2,10 @@
     import {onMount} from "svelte";
     import { wallet } from "$lib/web3/wallet.svelte";
     import { DEFAULT_NETWORK } from "$lib/web3/networks";
+    import { robotMarketplace } from "$lib/web3/contracts";
+    import { fmtRcred, shortAddress } from "$lib/format";
+    import BuyTokensPanel from "$lib/components/BuyTokensPanel.svelte";
   
-
     interface RobotRow {
         id: bigint;
         name: string;
@@ -12,7 +14,6 @@
         price: bigint;
         uri: string;
     }
-
 
     let robots = $state<RobotRow[]>([]);
     let loading = $state(true);
