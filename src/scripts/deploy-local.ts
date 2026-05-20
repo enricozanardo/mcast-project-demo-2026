@@ -86,7 +86,7 @@ async function main() {
   console.log("----------------------------------------------------------");
   console.log("Addresses persisted -- next, regenerate ABIs (only needed");
   console.log("after a contract change):");
-  console.log("  npx hardhat run scripts/export-abi.ts");
+  console.log("  npx hardhat run src/scripts/export-abi.ts");
   console.log("Try it from the Hardhat console:");
   console.log("  const sale = await ethers.getContractAt('TokenSale',        '" + saleAddress + "')");
   console.log("  const mkt  = await ethers.getContractAt('RobotMarketplace', '" + mktAddress + "')");

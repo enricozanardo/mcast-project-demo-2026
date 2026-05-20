@@ -6,12 +6,14 @@ export const ADDR_FILE = resolve(
   dirname(fileURLToPath(import.meta.url)),
   "..",
   "..",
+  "..",
   "frontend",
   "src",
   "lib",
   "contracts",
   "addresses.json",
 );
+
 
 export interface DeployedAddresses {
   RobotCredits: string;
