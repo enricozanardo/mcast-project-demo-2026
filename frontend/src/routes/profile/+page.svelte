@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { JsonRpcProvider } from "ethers";
   import { wallet } from "$lib/web3/wallet.svelte";
   import { robotCredits, robotMarketplace } from "$lib/web3/contracts";
+  import { DEFAULT_NETWORK } from "$lib/web3/networks";
   import { fmtRcred, shortAddress } from "$lib/format";
 
   let balance = $state<bigint | null>(null);
@@ -8,13 +10,24 @@
   let error = $state<string | null>(null);
   let loading = $state(false);
 
+  // Reads go through a plain JsonRpcProvider instead of MetaMask's
+  // BrowserProvider: MetaMask sometimes wraps view-call responses in a
+  // "missing revert data" error (it intercepts eth_call and may swallow
+  // the actual return data for dynamic-array returns like uint256[]).
+  // The signer (wallet.provider) is only needed for writes.
+  function readRunner(chainId: number): JsonRpcProvider {
+    const rpcUrl = wallet.network?.rpcUrl ?? DEFAULT_NETWORK.rpcUrl;
+    return new JsonRpcProvider(rpcUrl, chainId);
+  }
+
   async function load() {
     if (!wallet.isConnected || !wallet.account || !wallet.chainId) return;
     loading = true;
     error = null;
     try {
-      const rcred = robotCredits(wallet.provider!, wallet.chainId);
-      const mkt = robotMarketplace(wallet.provider!, wallet.chainId);
+      const runner = readRunner(wallet.chainId);
+      const rcred = robotCredits(runner, wallet.chainId);
+      const mkt = robotMarketplace(runner, wallet.chainId);
       balance = await rcred.balanceOf(wallet.account);
       owned = await mkt.tokensOfOwner(wallet.account);
     } catch (e) {
@@ -30,9 +43,10 @@
 
   // Live: refresh whenever an event touches our address.
   $effect(() => {
-    if (!wallet.provider || !wallet.account || !wallet.chainId) return;
-    const rcred = robotCredits(wallet.provider, wallet.chainId);
-    const mkt = robotMarketplace(wallet.provider, wallet.chainId);
+    if (!wallet.account || !wallet.chainId) return;
+    const runner = readRunner(wallet.chainId);
+    const rcred = robotCredits(runner, wallet.chainId);
+    const mkt = robotMarketplace(runner, wallet.chainId);
     const reload = () => load();
     rcred.on("Transfer", reload);
     mkt.on("RobotPurchased", reload);
@@ -40,6 +54,7 @@
     return () => {
       rcred.removeAllListeners();
       mkt.removeAllListeners();
+      runner.destroy();
     };
   });
 </script>

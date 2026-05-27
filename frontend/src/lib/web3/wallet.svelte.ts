@@ -1,4 +1,4 @@
-import { BrowserProvider, type JsonRpcSigner } from "ethers";
+import { BrowserProvider, type Eip1193Provider, type JsonRpcSigner } from "ethers";
 import { DEFAULT_NETWORK, networkFor, type NetworkConfig } from "./networks";
 
 class WalletState {
@@ -29,19 +29,19 @@ class WalletState {
     this.connecting = true;
     this.error = null;
     try {
-      const provider = new BrowserProvider(window.ethereum);
-      const accounts = (await provider.send("eth_requestAccounts", [])) as string[];
-      this.provider = provider;
+      const eth = window.ethereum;
+      const accounts = (await eth.request({ method: "eth_requestAccounts" })) as string[];
       this.account = accounts[0] ?? null;
 
-      const net = await provider.getNetwork();
-      this.chainId = Number(net.chainId);
-
-      if (this.chainId !== targetChainId) {
-        await this.switchTo(targetChainId);
+      const currentChainId = await this._readChainId(eth);
+      if (currentChainId !== targetChainId) {
+        await this._switchOrAddChain(eth, targetChainId);
       }
 
-      this.signer = await provider.getSigner();
+      // Build provider AFTER the chain switch so ethers caches the
+      // correct network. Otherwise the next call throws
+      // "network changed: <old> => <new>".
+      await this._rebuildProvider(eth);
       this._installListeners();
     } catch (e) {
       this.error = mapError(e);
@@ -59,13 +59,25 @@ class WalletState {
   }
 
   async switchTo(chainId: number): Promise<void> {
-    const cfg = networkFor(chainId);
-    if (!cfg) {
-      this.error = `Unknown chainId ${chainId}`;
-      return;
-    }
     if (typeof window === "undefined" || !window.ethereum) return;
     const eth = window.ethereum;
+    try {
+      await this._switchOrAddChain(eth, chainId);
+    } catch (e) {
+      this.error = mapError(e);
+      return;
+    }
+    // Rebuild on switch too, in case someone calls switchTo() outside of connect().
+    if (this.account) {
+      await this._rebuildProvider(eth);
+    }
+  }
+
+  private async _switchOrAddChain(eth: Eip1193Provider, chainId: number): Promise<void> {
+    const cfg = networkFor(chainId);
+    if (!cfg) {
+      throw new Error(`Unknown chainId ${chainId}`);
+    }
     try {
       await eth.request({
         method: "wallet_switchEthereumChain",
@@ -87,8 +99,25 @@ class WalletState {
           ],
         });
       } else {
-        this.error = mapError(e);
+        throw e;
       }
+    }
+  }
+
+  private async _readChainId(eth: Eip1193Provider): Promise<number> {
+    const hex = (await eth.request({ method: "eth_chainId" })) as string;
+    return Number.parseInt(hex, 16);
+  }
+
+  private async _rebuildProvider(eth: Eip1193Provider): Promise<void> {
+    const chainId = await this._readChainId(eth);
+    this.chainId = chainId;
+    const provider = new BrowserProvider(eth, chainId);
+    this.provider = provider;
+    try {
+      this.signer = await provider.getSigner();
+    } catch {
+      this.signer = null;
     }
   }
 
@@ -105,10 +134,13 @@ class WalletState {
     });
     eth.on("chainChanged", (...args: unknown[]) => {
       const hex = args[0] as string;
-      this.chainId = Number.parseInt(hex, 16);
-
-      if (this.provider) {
-        this.provider.getSigner().then((s) => (this.signer = s));
+      const newChainId = Number.parseInt(hex, 16);
+      // Recreate the provider so ethers' cached network matches the live
+      // chain; otherwise every subsequent call rejects with
+      // "network changed: <old> => <new>".
+      this.chainId = newChainId;
+      if (window.ethereum && this.account) {
+        void this._rebuildProvider(window.ethereum);
       }
     });
     this._listenersInstalled = true;

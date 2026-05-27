@@ -1,4 +1,6 @@
 import {
+  JsonRpcApiProvider,
+  JsonRpcProvider,
   type Contract,
   type Eip1193Provider,
   type JsonRpcSigner,
@@ -63,8 +65,25 @@ export function toHexQuantity(v: bigint): string {
 export interface SendTxOptions {
   /** ETH (in wei) to attach to the transaction. */
   value?: bigint;
-  /** Override gas limit (else we estimate via ethers and pad 20%). */
+  /** Override gas limit (else we estimate via the RPC and pad 20%). */
   gasLimit?: bigint;
+}
+
+/**
+ * Resolve the chain's HTTP RPC URL from the signer's provider, so we can do
+ * read-side work (estimateGas, getTransactionCount) without going through
+ * MetaMask. MetaMask's caches go stale after a hardhat restart and surface
+ * as "Internal JSON-RPC error" on otherwise-valid txs.
+ */
+function readRpcUrlFor(signer: JsonRpcSigner): string | null {
+  const provider = signer.provider as JsonRpcApiProvider | null;
+  if (!provider) return null;
+  try {
+    const chainId = Number(provider._network.chainId);
+    return networkFor(chainId)?.rpcUrl ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export async function sendTx(
@@ -86,32 +105,56 @@ export async function sendTx(
   const to = await contract.getAddress();
   const data = contract.interface.encodeFunctionData(method, args as unknown[]);
 
-  let gasLimit = opts.gasLimit;
-  if (gasLimit === undefined) {
-    const estimate = await contract.getFunction(method).estimateGas(...args, {
+  // Use a direct RPC connection for the read-only prep work (gas + nonce).
+  // This sidesteps MetaMask's stale-cache "Internal JSON-RPC error" after a
+  // local node restart, and gives us a fully-specified tx for MetaMask to
+  // just sign and broadcast.
+  const rpcUrl = readRpcUrlFor(signer);
+  const readProvider = rpcUrl ? new JsonRpcProvider(rpcUrl) : null;
+
+  try {
+    let gasLimit = opts.gasLimit;
+    if (gasLimit === undefined) {
+      const estimate = readProvider
+        ? await readProvider.estimateGas({
+            from,
+            to,
+            data,
+            ...(opts.value !== undefined ? { value: opts.value } : {}),
+          })
+        : await contract.getFunction(method).estimateGas(...args, {
+            from,
+            ...(opts.value !== undefined ? { value: opts.value } : {}),
+          });
+      gasLimit = (estimate * 12n) / 10n;
+    }
+
+    const params: Record<string, string> = {
       from,
-      ...(opts.value !== undefined ? { value: opts.value } : {}),
-    });
-    gasLimit = (estimate * 12n) / 10n;
+      to,
+      data,
+      gas: toHexQuantity(gasLimit),
+    };
+    if (opts.value !== undefined) {
+      params.value = toHexQuantity(opts.value);
+    }
+
+    // Pin the nonce from the live chain so MetaMask's tracker (which can
+    // be one step behind after a hardhat restart) doesn't reject the tx.
+    if (readProvider) {
+      const nonce = await readProvider.getTransactionCount(from, "pending");
+      params.nonce = toHexQuantity(BigInt(nonce));
+    }
+
+    const hash = (await eth.request({
+      method: "eth_sendTransaction",
+      params: [params],
+    })) as string;
+
+    return hash;
+  } finally {
+    readProvider?.destroy();
   }
-
-
-  const params: Record<string, string> = {
-    from,
-    to,
-    data,
-    gas: toHexQuantity(gasLimit),
-  };
-  if (opts.value !== undefined) {
-    params.value = toHexQuantity(opts.value);
-  }
-
-  const hash = (await eth.request({
-    method: "eth_sendTransaction",
-    params: [params],
-  })) as string;
-
-  return hash;
 }
 
 

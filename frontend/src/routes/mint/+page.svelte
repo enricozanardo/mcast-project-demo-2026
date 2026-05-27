@@ -44,6 +44,8 @@
       const receipt = await waitReceipt(wallet.provider, hash);
       status = "success";
 
+      // Find the new token id from the RobotMinted event so we can jump
+      // straight to its detail page.
       const evt = findEvent(mkt.interface, receipt, "RobotMinted");
       const newId = evt?.args?.tokenId as bigint | undefined;
       if (newId !== undefined) {

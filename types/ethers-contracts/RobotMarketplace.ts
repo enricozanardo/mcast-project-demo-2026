@@ -6,7 +6,7 @@ import type { TypedContractEvent, TypedDeferredTopicFilter, TypedEventLog, Typed
   
 
   export interface RobotMarketplaceInterface extends Interface {
-    getFunction(nameOrSignature: "approve" | "balanceOf" | "buyRobot" | "getApproved" | "getRobot" | "isApprovedForAll" | "mintRobot" | "name" | "ownerOf" | "paymentToken" | "safeTransferFrom(address,address,uint256)" | "safeTransferFrom(address,address,uint256,bytes)" | "setApprovalForAll" | "supportsInterface" | "symbol" | "tokenIdAt" | "tokenOfOwner" | "tokenURI" | "totalRobots" | "transferFrom" | "updatePrice"): FunctionFragment;
+    getFunction(nameOrSignature: "approve" | "balanceOf" | "buyRobot" | "getApproved" | "getRobot" | "isApprovedForAll" | "mintRobot" | "name" | "ownerOf" | "paymentToken" | "safeTransferFrom(address,address,uint256)" | "safeTransferFrom(address,address,uint256,bytes)" | "setApprovalForAll" | "supportsInterface" | "symbol" | "tokenIdAt" | "tokenURI" | "tokensOfOwner" | "totalRobots" | "transferFrom" | "updatePrice"): FunctionFragment;
 
     getEvent(nameOrSignatureOrTopic: "Approval" | "ApprovalForAll" | "BatchMetadataUpdate" | "MetadataUpdate" | "PriceUpdated" | "RobotMinted" | "RobotPurchased" | "Transfer"): EventFragment;
 
@@ -26,8 +26,8 @@ encodeFunctionData(functionFragment: 'setApprovalForAll', values: [AddressLike, 
 encodeFunctionData(functionFragment: 'supportsInterface', values: [BytesLike]): string;
 encodeFunctionData(functionFragment: 'symbol', values?: undefined): string;
 encodeFunctionData(functionFragment: 'tokenIdAt', values: [BigNumberish]): string;
-encodeFunctionData(functionFragment: 'tokenOfOwner', values: [AddressLike]): string;
 encodeFunctionData(functionFragment: 'tokenURI', values: [BigNumberish]): string;
+encodeFunctionData(functionFragment: 'tokensOfOwner', values: [AddressLike]): string;
 encodeFunctionData(functionFragment: 'totalRobots', values?: undefined): string;
 encodeFunctionData(functionFragment: 'transferFrom', values: [AddressLike, AddressLike, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'updatePrice', values: [BigNumberish, BigNumberish]): string;
@@ -48,8 +48,8 @@ decodeFunctionResult(functionFragment: 'setApprovalForAll', data: BytesLike): Re
 decodeFunctionResult(functionFragment: 'supportsInterface', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'symbol', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'tokenIdAt', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'tokenOfOwner', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'tokenURI', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'tokensOfOwner', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'totalRobots', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'transferFrom', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'updatePrice', data: BytesLike): Result;
@@ -314,17 +314,17 @@ decodeFunctionResult(functionFragment: 'updatePrice', data: BytesLike): Result;
     
 
     
-    tokenOfOwner: TypedContractMethod<
-      [account: AddressLike, ],
-      [bigint[]],
+    tokenURI: TypedContractMethod<
+      [tokenId: BigNumberish, ],
+      [string],
       'view'
     >
     
 
     
-    tokenURI: TypedContractMethod<
-      [tokenId: BigNumberish, ],
-      [string],
+    tokensOfOwner: TypedContractMethod<
+      [account: AddressLike, ],
+      [bigint[]],
       'view'
     >
     
@@ -436,14 +436,14 @@ getFunction(nameOrSignature: 'tokenIdAt'): TypedContractMethod<
       [bigint],
       'view'
     >;
-getFunction(nameOrSignature: 'tokenOfOwner'): TypedContractMethod<
-      [account: AddressLike, ],
-      [bigint[]],
-      'view'
-    >;
 getFunction(nameOrSignature: 'tokenURI'): TypedContractMethod<
       [tokenId: BigNumberish, ],
       [string],
+      'view'
+    >;
+getFunction(nameOrSignature: 'tokensOfOwner'): TypedContractMethod<
+      [account: AddressLike, ],
+      [bigint[]],
       'view'
     >;
 getFunction(nameOrSignature: 'totalRobots'): TypedContractMethod<
